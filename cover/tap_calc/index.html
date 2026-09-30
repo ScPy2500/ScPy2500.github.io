@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="zh-CN" id="htmlRoot">
+<head>
+<meta charset="UTF-8">
+<title>TapCalc</title>
+
+<style>
+/* ====== 基础变量 ====== */
+:root {
+    --bg: linear-gradient(130deg, #a8edea, #fed6e3, #d5b3f3);
+    --glass: rgba(255,255,255,0.25);
+    --glass-inner: rgba(255,255,255,0.45);
+    --btn: rgba(255,255,255,0.35);
+    --text: #000;
+    --radius: 14px;
+}
+
+body {
+    min-height: 100vh;
+    background: var(--bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: "SF Pro Display", "PingFang SC", sans-serif;
+    color: var(--text);
+    transition: background 0.6s ease, color 0.4s ease;
+}
+
+.calc {
+    width: 360px;
+    padding: 20px;
+    border-radius: 26px;
+    backdrop-filter: blur(18px) saturate(180%);
+    -webkit-backdrop-filter: blur(18px) saturate(180%);
+    background: var(--glass);
+    box-shadow:
+        0 8px 32px rgba(0,0,0,0.18),
+        inset 0 0 0 1px rgba(255,255,255,0.35);
+    position: relative;
+    transition: background 0.6s ease;
+}
+
+/* ====== 顶部 ====== */
+.topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.mode select {
+    padding: 6px 10px;
+    border-radius: 10px;
+    border: none;
+    background: var(--glass-inner);
+    font-size: 14px;
+}
+
+.settingsBtn {
+    height: 34px;
+    width: 34px;
+    border-radius: 10px;
+    border: none;
+    background: var(--btn);
+    font-size: 18px;
+    cursor: pointer;
+    backdrop-filter: blur(10px);
+}
+
+/* ====== 显示区（✅右对齐修复）====== */
+.display {
+    width: 100%;
+    height: 68px;
+    font-size: 36px;
+    padding: 10px 18px 10px 14px; /* ✅ 关键 */
+    border-radius: 16px;
+    border: none;
+    text-align: right;
+    background: var(--glass-inner);
+    box-shadow: inset 0 2px 6px rgba(0,0,0,0.1);
+    margin-bottom: 16px;
+    overflow-x: auto;
+    white-space: nowrap;
+    box-sizing: border-box;
+}
+
+.display.small {
+    font-size: 24px;
+}
+
+/* ====== 按钮 ====== */
+.btns {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+}
+
+button {
+    height: 52px;
+    font-size: 18px;
+    border: none;
+    border-radius: var(--radius);
+    background: var(--btn);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    box-shadow:
+        0 4px 10px rgba(0,0,0,0.12),
+        inset 0 1px 0 rgba(255,255,255,0.4);
+    cursor: pointer;
+    transition: all 0.12s ease;
+    outline: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+button:active {
+    transform: scale(0.93);
+    box-shadow: inset 0 2px 6px rgba(0,0,0,0.25);
+}
+
+/* ====== 科学面板 ====== */
+.panel {
+    margin-top: 12px;
+    display: none;
+    gap: 8px;
+}
+
+.panel.active {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+}
+
+/* ====== 设置面板 ====== */
+.settingsPanel {
+    position: absolute;
+    top: 60px;
+    right: 10px;
+    width: 260px;
+    padding: 16px;
+    border-radius: 18px;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    background: rgba(255,255,255,0.55);
+    box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+    display: none;
+    z-index: 10;
+}
+
+.settingsPanel.show {
+    display: block;
+}
+
+.settingsPanel h3 {
+    margin: 0 0 10px;
+    font-weight: normal;
+    font-size: 16px;
+}
+
+.settingsPanel label {
+    font-size: 13px;
+    display: block;
+    margin-top: 10px;
+}
+
+.settingsPanel select,
+.settingsPanel input[type="range"] {
+    width: 100%;
+    margin-top: 4px;
+}
+
+.volumeRow {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+#volumeVal {
+    min-width: 38px;
+    text-align: right;
+    font-size: 13px;
+}
+
+/* ==================================================
+   主题 1：拟物复古 Classic
+================================================== */
+.theme-classic {
+    --bg: linear-gradient(160deg, #cfcfcf, #eceae4);
+    --glass: #dcdcdc;
+    --glass-inner: #f5f5f5;
+    --btn: linear-gradient(180deg, #f2f2f2, #c8c8c8);
+    --text: #1a1a1a;
+    --radius: 10px;
+    font-family: "Courier New", monospace;
+}
+
+.theme-classic button {
+    box-shadow:
+        inset 0 1px 0 #fff,
+        0 4px 0 #999,
+        0 6px 8px rgba(0,0,0,0.3);
+    border: 1px solid #aaa;
+}
+
+.theme-classic .display {
+    font-family: "Segment7Standard", "Courier New", monospace;
+    background: #b6c5a8;
+    color: #1f2f1a;
+    text-shadow: 0 0 6px #9cef7a;
+}
+
+/* ==================================================
+   主题 2：赛博朋克 Cyberpunk
+================================================== */
+.theme-cyberpunk {
+    --bg: linear-gradient(120deg, #0f0c29, #302b63, #24243e);
+    --glass: rgba(0,0,0,0.35);
+    --glass-inner: rgba(20,20,40,0.6);
+    --btn: rgba(255,0,128,0.12);
+    --text: #0ff;
+    --radius: 12px;
+    font-family: "Orbitron", "PingFang SC", sans-serif;
+}
+
+.theme-cyberpunk button {
+    border: 1px solid #0ff;
+    box-shadow: 0 0 10px #0ff, inset 0 0 6px rgba(0,255,255,0.3);
+}
+
+.theme-cyberpunk .display {
+    color: #f0f;
+    text-shadow: 0 0 10px #f0f;
+    background: rgba(0,0,0,0.5);
+}
+
+/* ==================================================
+   主题 3：液态玻璃 Liquid
+================================================== */
+.theme-liquid {
+    --bg: linear-gradient(130deg, #a8edea, #fed6e3, #d5b3f3);
+    --glass: rgba(255,255,255,0.25);
+    --glass-inner: rgba(255,255,255,0.45);
+    --btn: rgba(255,255,255,0.35);
+    --text: #000;
+    --radius: 18px;
+}
+
+/* ==================================================
+   主题 4：极简无界 Minimalist
+================================================== */
+.theme-minimalist {
+    --bg: #ffffff;
+    --glass: #ffffff;
+    --glass-inner: #ffffff;
+    --btn: transparent;
+    --text: #111;
+    --radius: 12px;
+}
+
+.theme-minimalist button {
+    border: 1.5px solid #ccc;
+    box-shadow: none;
+    background: transparent;
+}
+
+.theme-minimalist .display {
+    font-size: 44px;
+    background: transparent;
+    box-shadow: none;
+}
+</style>
+</head>
+
+<body>
+
+<div class="calc">
+    <div class="topbar">
+        <div class="mode">
+            <select id="mode">
+                <option value="basic">标准</option>
+                <option value="sci">科学</option>
+            </select>
+        </div>
+        <button class="settingsBtn" id="openSettings">⚙️</button>
+    </div>
+
+    <input class="display" id="display" value="0" readonly>
+
+    <div class="btns" id="basicBtns">
+        <button data-val="C">C</button>
+        <button data-val="(">(</button>
+        <button data-val=")">)</button>
+        <button data-val="/">÷</button>
+
+        <button data-val="7">7</button>
+        <button data-val="8">8</button>
+        <button data-val="9">9</button>
+        <button data-val="*">×</button>
+
+        <button data-val="4">4</button>
+        <button data-val="5">5</button>
+        <button data-val="6">6</button>
+        <button data-val="-">−</button>
+
+        <button data-val="1">1</button>
+        <button data-val="2">2</button>
+        <button data-val="3">3</button>
+        <button data-val="+">+</button>
+
+        <button data-val="0">0</button>
+        <button data-val=".">.</button>
+        <button data-val="=" style="grid-column: span 2;">=</button>
+    </div>
+
+    <div class="panel" id="sciPanel">
+        <button data-val="Math.sin(">sin</button>
+        <button data-val="Math.cos(">cos</button>
+        <button data-val="Math.tan(">tan</button>
+        <button data-val="Math.log(">log</button>
+        <button data-val="Math.sqrt(">√</button>
+        <button data-val="**2">x²</button>
+        <button data-val="Math.PI">π</button>
+        <button data-val="Math.E">e</button>
+    </div>
+
+    <div class="settingsPanel" id="settingsPanel">
+        <h3>设置</h3>
+
+        <label>主题</label>
+        <select id="theme">
+            <option value="liquid">液态玻璃</option>
+            <option value="classic">拟物复古</option>
+            <option value="cyberpunk">赛博朋克</option>
+            <option value="minimalist">极简无界</option>
+        </select>
+
+        <label>按键音效</label>
+        <select id="sound">
+            <option value="pop">POP</option>
+            <option value="snap">Snap</option>
+            <option value="click">Click</option>
+            <option value="silent">Silent</option>
+        </select>
+
+        <label>音量</label>
+        <div class="volumeRow">
+            <input id="volume" type="range" min="0" max="1" step="0.01" value="0.3">
+            <span id="volumeVal">30%</span>
+        </div>
+
+        <label style="margin-top:14px; font-size:11px; opacity:0.6;">
+            手工打磨 · 多主题计算器
+        </label>
+    </div>
+</div>
+
+<script>
+let audioCtx = null;
+const display = document.getElementById("display");
+const settingsPanel = document.getElementById("settingsPanel");
+const openSettings = document.getElementById("openSettings");
+const volumeCtrl = document.getElementById("volume");
+const volumeVal = document.getElementById("volumeVal");
+const themeSelect = document.getElementById("theme");
+
+/* 设置显隐 */
+openSettings.addEventListener("click", e => {
+    e.stopPropagation();
+    settingsPanel.classList.toggle("show");
+});
+
+document.addEventListener("click", e => {
+    if (!settingsPanel.contains(e.target)) {
+        settingsPanel.classList.remove("show");
+    }
+});
+
+/* 音量显示 */
+volumeCtrl.addEventListener("input", () => {
+    volumeVal.textContent = Math.round(volumeCtrl.value * 100) + "%";
+});
+
+/* 主题切换 */
+themeSelect.addEventListener("change", () => {
+    document.documentElement.className = "";
+    document.documentElement.classList.add("theme-" + themeSelect.value);
+});
+
+/* 音频 */
+function ensureAudio() {
+    if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+}
+
+function playSound() {
+    ensureAudio();
+    const type = document.getElementById("sound").value;
+    if (type === "silent") return;
+
+    const gain = audioCtx.createGain();
+    gain.gain.value = parseFloat(volumeCtrl.value);
+    gain.connect(audioCtx.destination);
+
+    const osc = audioCtx.createOscillator();
+    osc.connect(gain);
+
+    switch (type) {
+        case "pop":
+            osc.type = "sine";
+            osc.frequency.setValueAtTime(880, audioCtx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(220, audioCtx.currentTime + 0.08);
+            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.1);
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.1);
+            break;
+        case "snap":
+            osc.type = "triangle";
+            osc.frequency.setValueAtTime(1800, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.05);
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.05);
+            break;
+        case "click":
+            osc.type = "square";
+            osc.frequency.setValueAtTime(1200, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.03);
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.03);
+            break;
+    }
+}
+
+/* 输入 */
+function fitText() {
+    display.classList.toggle("small", display.value.length > 12);
+}
+
+document.querySelectorAll("button[data-val]").forEach(btn => {
+    btn.addEventListener("click", () => {
+        playSound();
+        const v = btn.dataset.val;
+
+        if (v === "C") {
+            display.value = "0";
+        } else if (v === "=") {
+            try {
+                display.value = eval(display.value);
+            } catch {
+                display.value = "错啦";
+            }
+        } else {
+            display.value = display.value === "0" ? v : display.value + v;
+        }
+        fitText();
+    });
+});
+
+/* 模式切换 */
+const mode = document.getElementById("mode");
+mode.addEventListener("change", () => {
+    document.querySelectorAll(".panel").forEach(p => p.classList.remove("active"));
+    document.getElementById(mode.value + "Panel").classList.add("active");
+});
+mode.dispatchEvent(new Event("change"));
+</script>
+
+</body>
+</html>
