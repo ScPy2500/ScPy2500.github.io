@@ -15,6 +15,7 @@ div{
 }
 .imtitle{font-size: 45px;font-weight: bold;}
 .hid{
+  text-align: center;
   width: 90%;
   padding: 10px;
   backdrop-filter: blur(0);
@@ -32,7 +33,9 @@ h2,th{
   text-align: center;
 }
 p,td{font-size: 25px;}
-td{text-align: center;}
+td{
+  text-align: center;
+}
 footer{
   font-size: 20px;
   text-align: center;
