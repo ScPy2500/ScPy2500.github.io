@@ -4,11 +4,11 @@
   }
 div{
     text-align: center;
-    width: 60%;
+    width: 80%;
     position: absolute;
     backdrop-filter: blur(10px);
     background: rgba(0,0,0,50%);
-    padding: 10px 20%;
+    padding: 10px 10%;
     border-radius: 15px;
 }
 .bottom{font-size: 10px;}
