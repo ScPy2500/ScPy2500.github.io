@@ -37,11 +37,11 @@ p,td{font-size: 25px;}
 td{
   text-align: center;
 }
-table,img{
+table{
   margin: auto;
 }
 footer{
-  font-size: 20px;
+  font-size: 15px;
   text-align: center;
 }
 a{
