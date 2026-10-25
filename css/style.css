@@ -12,6 +12,7 @@ div{
   background: rgba(225,225,225,30%);
   position: fixed;
   padding: 10px 0 10px 0;
+  a{font-size: 30px;}
 }
 .imtitle{font-size: 45px;font-weight: bold;}
 .hid{
@@ -36,11 +37,15 @@ p,td{font-size: 25px;}
 td{
   text-align: center;
 }
+table,img{
+  margin: auto;
+}
 footer{
   font-size: 20px;
   text-align: center;
 }
 a{
+  font-size: 25px;
   text-decoration: none;
   color: black;
 } 
