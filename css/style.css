@@ -34,12 +34,8 @@ h2,th{
   text-align: center;
 }
 p,td{font-size: 25px;}
-td{
-  text-align: center;
-}
-table{
-  margin: auto;
-}
+td{text-align: center;}
+table{margin: auto;}
 footer{
   font-size: 15px;
   text-align: center;
