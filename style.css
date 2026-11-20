@@ -1,0 +1,49 @@
+body{
+    background: blanchedalmond;
+}
+h1{
+    color: darkblue;
+    font-weight: bold;
+    font-size: 5vh;
+    text-align: center;
+}
+h2{
+    color: darkgreen;
+    font-size: 3vh;
+    font-weight: bold;
+}
+p{
+    font-size: 1.5vh;
+    color: gray;
+}
+.a{float: right}
+.foot{
+    font-size: 1.5vh;
+    border-radius: 0.5vh;
+    background: none;
+    color: black;
+}
+a{
+    text-decoration: none;
+    background: pink;
+    color: darkred;
+    border-radius: 1vh;
+    font-size: 2.5vh;
+    padding: 0 1vh;
+}
+a:hover{
+    background-color: lightpink;
+}
+table{
+    margin: auto;
+    width: 80%;
+}
+td{
+    padding: 0 1vh;
+    background: lightblue;
+    border-radius: 2vh;
+}
+.e-title{
+    color: darkred;
+    text-align: center;
+}
